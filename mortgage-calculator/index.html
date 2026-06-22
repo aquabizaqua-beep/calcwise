@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mortgage Calculator – Monthly Payment with Taxes & Insurance</title>
+<meta name="description" content="Free mortgage calculator. Estimate your monthly payment including principal, interest, property tax, insurance and HOA for any home price and rate." />
+<link rel="canonical" href="https://REPLACE_DOMAIN/mortgage-calculator/" />
+<style>
+:root{--card:#fff;--ink:#0f172a;--muted:#64748b;--brand:#2563eb;--line:#e2e8f0;--bg:#f8fafc}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}main{max-width:720px;margin:0 auto;padding:20px}h1{font-size:1.7rem;margin:.2em 0}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin:16px 0}label{display:block;font-weight:600;margin:12px 0 4px;font-size:.92rem}input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;font-size:1rem}button{margin-top:16px;width:100%;padding:13px;border:0;border-radius:9px;background:var(--brand);color:#fff;font-size:1.05rem;font-weight:600;cursor:pointer}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.result{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}.big{font-size:2rem;font-weight:700;color:var(--brand)}.ad-slot{min-height:90px;background:#f1f5f9;border:1px dashed #cbd5e1;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#94a3b8;margin:16px 0}.muted{color:var(--muted);font-size:.9rem}.offers a{display:block;padding:14px;border:1px solid var(--line);border-radius:10px;margin:8px 0;text-decoration:none;color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+<main>
+<h1>Mortgage Calculator</h1>
+<p class="muted">Estimate your full monthly payment: principal, interest, taxes and insurance.</p>
+<div class="ad-slot">Ad slot (top)</div>
+<div class="card">
+  <div class="grid">
+    <div><label>Home price ($)</label><input id="price" type="number" value="350000"></div>
+    <div><label>Down payment ($)</label><input id="down" type="number" value="70000"></div>
+    <div><label>Interest rate (% APR)</label><input id="rate" type="number" value="6.5" step="0.01"></div>
+    <div><label>Term (years)</label><input id="years" type="number" value="30"></div>
+    <div><label>Property tax (%/yr)</label><input id="tax" type="number" value="1.1" step="0.01"></div>
+    <div><label>Home insurance ($/yr)</label><input id="ins" type="number" value="1500"></div>
+    <div><label>HOA ($/mo)</label><input id="hoa" type="number" value="0"></div>
+  </div>
+  <button id="btn">Calculate</button>
+</div>
+<div class="card" id="results" hidden>
+  <div class="result"><span>Principal & interest</span><b id="o_pi"></b></div>
+  <div class="result"><span>Tax + insurance + HOA</span><b id="o_extra"></b></div>
+  <div class="result"><span>Total monthly payment</span><b class="big" id="o_total"></b></div>
+</div>
+<section class="offers card">
+  <h2>Compare mortgage rates</h2>
+  <a href="REPLACE_AFFILIATE_1" rel="sponsored nofollow" target="_blank">Today's mortgage rates →</a>
+  <p class="muted">Advertiser disclosure: we may earn a commission.</p>
+</section>
+<script>
+const f=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+function g(id){return parseFloat(document.getElementById(id).value)||0}
+function calc(){
+  const price=g('price'),down=g('down'),rate=g('rate'),years=g('years'),taxP=g('tax'),ins=g('ins'),hoa=g('hoa');
+  const P=Math.max(price-down,0),r=rate/100/12,n=Math.round(years*12);
+  const pi=r>0?P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1):(n?P/n:0);
+  const extra=price*taxP/100/12+ins/12+hoa;
+  document.getElementById('o_pi').textContent=f.format(pi);
+  document.getElementById('o_extra').textContent=f.format(extra);
+  document.getElementById('o_total').textContent=f.format(pi+extra);
+  document.getElementById('results').hidden=false;
+}
+document.getElementById('btn').addEventListener('click',calc);calc();
+</script>
+</main>
+</body>
+</html>
