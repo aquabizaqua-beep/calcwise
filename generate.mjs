@@ -125,6 +125,52 @@ for (const price of [20000, 25000, 30000, 35000, 40000])
       })
     }
 
+// ===== Take-home pay by state =====
+const STATES = {
+  'Alabama': 4.0, 'Alaska': 0, 'Arizona': 2.5, 'Arkansas': 3.9, 'California': 6.0,
+  'Colorado': 4.4, 'Connecticut': 5.0, 'Delaware': 5.0, 'Florida': 0, 'Georgia': 5.49,
+  'Hawaii': 7.0, 'Idaho': 5.8, 'Illinois': 4.95, 'Indiana': 3.15, 'Iowa': 5.7,
+  'Kansas': 5.2, 'Kentucky': 4.5, 'Louisiana': 4.25, 'Maine': 6.75, 'Maryland': 4.75,
+  'Massachusetts': 5.0, 'Michigan': 4.25, 'Minnesota': 6.8, 'Mississippi': 4.7, 'Missouri': 4.8,
+  'Montana': 5.9, 'Nebraska': 5.84, 'Nevada': 0, 'New Hampshire': 0, 'New Jersey': 5.0,
+  'New Mexico': 4.9, 'New York': 6.0, 'North Carolina': 4.5, 'North Dakota': 1.95, 'Ohio': 3.5,
+  'Oklahoma': 4.75, 'Oregon': 8.75, 'Pennsylvania': 3.07, 'Rhode Island': 4.75, 'South Carolina': 6.4,
+  'South Dakota': 0, 'Tennessee': 0, 'Texas': 0, 'Utah': 4.65, 'Vermont': 6.6,
+  'Virginia': 5.75, 'Washington': 0, 'West Virginia': 5.12, 'Wisconsin': 5.3, 'Wyoming': 0,
+}
+
+const federalTax = (gross) => {
+  const taxable = Math.max(0, gross - 14600)
+  const brackets = [[0, 0.10], [11600, 0.12], [47150, 0.22], [100525, 0.24], [191950, 0.32], [243725, 0.35], [609350, 0.37]]
+  let tax = 0
+  for (let i = 0; i < brackets.length; i++) {
+    const lo = brackets[i][0]
+    const hi = i + 1 < brackets.length ? brackets[i + 1][0] : Infinity
+    if (taxable > lo) tax += (Math.min(taxable, hi) - lo) * brackets[i][1]
+  }
+  return tax
+}
+
+const slugify = s => s.toLowerCase().replace(/\s+/g, '-')
+
+for (const [state, stateRate] of Object.entries(STATES))
+  for (const salary of [40000, 50000, 60000, 70000, 80000, 100000, 120000, 150000]) {
+    const fed = federalTax(salary)
+    const fica = Math.min(salary, 168600) * 0.062 + salary * 0.0145
+    const stateTax = salary * stateRate / 100
+    const net = salary - fed - fica - stateTax
+    render({
+      section: 'take-home-pay',
+      slug: `${salary}-after-tax-in-${slugify(state)}`,
+      title: `${money(salary)} After Tax in ${state} — Take-Home Pay`,
+      description: `A ${money(salary)} salary in ${state} leaves about ${money(net)}/year take-home (~${money(net / 12)}/mo) after federal, state and FICA taxes.`,
+      h1: `${money(salary)} after tax in ${state}`,
+      answer: `Take-home: ${money(net)}/yr (~${money(net / 12)}/mo)`,
+      rows: [['Gross salary', money(salary)], ['Federal tax', money(fed)], [`${state} state tax`, money(stateTax)], ['FICA (SS + Medicare)', money(fica)], ['Take-home (year)', money(net)], ['Take-home (month)', money(net / 12)]],
+      related: [{ href: '/take-home-pay/', label: 'Take-home pay calculator' }, { href: '/compound-interest/', label: 'Compound interest' }],
+    })
+  }
+
 // ===== sitemap.xml + robots.txt =====
 const staticPaths = ['', 'loan-calculator/', 'mortgage-calculator/', 'take-home-pay/', 'compound-interest/', 'debt-payoff/', 'auto-loan-calculator/']
 const allUrls = staticPaths.map(p => `${DOMAIN}/${p}`).concat(urls)
